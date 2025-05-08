@@ -1,73 +1,61 @@
-# Welcome to your Lovable project
 
-## Project info
+# Pothole Vision - ML-Powered Road Hazard Detection
 
-**URL**: https://lovable.dev/projects/507c85e9-af94-488e-bb72-b39f58d8ff69
+This project simulates a Flutter application that uses YOLOv8n in TFLite format to detect potholes in real-time from video input.
 
-## How can I edit this code?
+## Project Overview
 
-There are several ways of editing your application.
+Pothole Vision is designed to demonstrate how machine learning can be used to identify road hazards in real-time. The application uses:
 
-**Use Lovable**
+- Camera integration for video feed
+- TFLite model (YOLOv8n) for object detection
+- Real-time bounding box visualization
+- Performance optimizations to minimize latency
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/507c85e9-af94-488e-bb72-b39f58d8ff69) and start prompting.
+## Important Note
 
-Changes made via Lovable will be committed automatically to this repo.
+This is a React-based simulation of how the Flutter app would function. In a real Flutter implementation, you would:
 
-**Use your preferred IDE**
+1. Use Flutter's camera package for video input
+2. Integrate the TFLite model using Flutter's tflite package
+3. Process frames and display detection results with Flutter's Canvas API
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Real Flutter Implementation Guide
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+To implement this in a real Flutter application:
 
-Follow these steps:
+1. Create a new Flutter project: `flutter create pothole_vision`
+2. Add the required dependencies to `pubspec.yaml`:
+   ```yaml
+   dependencies:
+     flutter:
+       sdk: flutter
+     camera: ^0.10.0
+     tflite: ^1.1.2
+     path_provider: ^2.0.11
+     permission_handler: ^10.0.0
+   ```
+3. Place your YOLOv8n.tflite model in the assets folder
+4. Update your `pubspec.yaml` to include the model:
+   ```yaml
+   assets:
+     - assets/models/YOLOv8n.tflite
+   ```
+5. Request camera permissions in your AndroidManifest.xml and Info.plist
+6. Implement camera initialization and frame processing
+7. Apply the TFLite model to each frame and visualize results
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Performance Optimization Tips
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+For optimal performance in the real Flutter implementation:
 
-# Step 3: Install the necessary dependencies.
-npm i
+- Process frames at a lower resolution than displayed
+- Consider skipping frames if processing can't keep up
+- Use compute/isolate for model inference to avoid UI freezes
+- Apply detection on keyframes only (e.g., every 3-5 frames)
+- Ensure the model is optimized for mobile deployment
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Credits
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/507c85e9-af94-488e-bb72-b39f58d8ff69) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- YOLOv8 by Ultralytics
+- This simulation built with React, TypeScript, and Tailwind CSS
