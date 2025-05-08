@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { Camera as CameraIcon } from 'lucide-react';
 
 interface Detection {
   id: number;
@@ -14,55 +16,71 @@ interface Detection {
 interface CameraProps {
   isDetecting: boolean;
   onDetection: (count: number) => void;
+  isMobile?: boolean;
 }
 
-export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
+export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection, isMobile = false }) => {
   const [detections, setDetections] = useState<Detection[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
   const animationRef = useRef<number | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [usingRearCamera, setUsingRearCamera] = useState(true);
   
-  // Mock video dimensions
+  // Mobile optimized video dimensions
   const videoWidth = 640;
   const videoHeight = 480;
   
-  // Start camera
-  useEffect(() => {
-    const setupCamera = async () => {
-      try {
-        const constraints = {
-          video: {
-            width: { ideal: videoWidth },
-            height: { ideal: videoHeight },
-            facingMode: "environment"
-          }
-        };
-        
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-          setCameraActive(true);
-          
-          toast({
-            title: "Camera initialized",
-            description: "Camera feed is now active"
-          });
+  // Toggle camera function for mobile
+  const toggleCamera = async () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
+    }
+    
+    setUsingRearCamera(!usingRearCamera);
+    await setupCamera(!usingRearCamera);
+  };
+  
+  // Start camera with facingMode option
+  const setupCamera = async (useRear = true) => {
+    try {
+      const facingMode = useRear ? "environment" : "user";
+      
+      const constraints = {
+        video: {
+          width: { ideal: videoWidth },
+          height: { ideal: videoHeight },
+          facingMode
         }
-      } catch (error) {
-        console.error("Error accessing camera:", error);
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setCameraActive(true);
+        
         toast({
-          variant: "destructive",
-          title: "Camera error",
-          description: "Could not access camera. Please check permissions."
+          title: `${useRear ? "Rear" : "Front"} camera activated`,
+          description: "Camera feed is now active"
         });
       }
-    };
-    
-    setupCamera();
+    } catch (error) {
+      console.error("Error accessing camera:", error);
+      toast({
+        variant: "destructive",
+        title: "Camera error",
+        description: "Could not access camera. Please check permissions."
+      });
+    }
+  };
+  
+  // Initialize camera
+  useEffect(() => {
+    setupCamera(true);
     
     return () => {
       // Clean up camera stream
@@ -72,7 +90,7 @@ export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
         setCameraActive(false);
       }
     };
-  }, [toast]);
+  }, []);
   
   // Mock TFLite detection
   useEffect(() => {
@@ -97,6 +115,11 @@ export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
         
         setDetections(mockDetections);
         onDetection(mockDetections.length);
+        
+        // Haptic feedback for mobile when pothole detected
+        if (mockDetections.length > 0 && navigator.vibrate && isMobile) {
+          navigator.vibrate(200);
+        }
       }, 1000);
       
       toast({
@@ -120,7 +143,7 @@ export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
         clearInterval(detectionInterval);
       }
     };
-  }, [isDetecting, cameraActive, onDetection, toast]);
+  }, [isDetecting, cameraActive, onDetection, toast, isMobile]);
   
   // Animation loop for smooth rendering
   useEffect(() => {
@@ -164,7 +187,7 @@ export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
   }, [detections, cameraActive]);
   
   return (
-    <div className="camera-container h-full">
+    <div className="camera-container h-full relative">
       <canvas 
         ref={canvasRef}
         width={videoWidth}
@@ -177,6 +200,20 @@ export const Camera: React.FC<CameraProps> = ({ isDetecting, onDetection }) => {
         muted
         playsInline
       />
+      
+      {/* Camera controls for mobile */}
+      {isMobile && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-4">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="bg-black/50 rounded-full h-12 w-12 border-white"
+            onClick={toggleCamera}
+          >
+            <CameraIcon className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
       
       {isDetecting && (
         <div className="absolute bottom-4 right-4 bg-detection text-black px-2 py-1 rounded-full text-sm font-bold animate-pulse-detection">

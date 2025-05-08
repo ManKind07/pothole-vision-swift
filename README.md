@@ -12,13 +12,51 @@ Pothole Vision is designed to demonstrate how machine learning can be used to id
 - Real-time bounding box visualization
 - Performance optimizations to minimize latency
 
+## Mobile App Features
+
+This application is now mobile-ready with the following features:
+
+- Responsive UI designed for mobile screens
+- Camera control with front/rear camera switching
+- Fullscreen mode for better detection visualization
+- Haptic feedback when potholes are detected
+- Native splash screen
+
 ## Important Note
 
-This is a React-based simulation of how the Flutter app would function. In a real Flutter implementation, you would:
+This is a React-based simulation using Capacitor to provide mobile capabilities. In a real Flutter implementation, you would:
 
 1. Use Flutter's camera package for video input
 2. Integrate the TFLite model using Flutter's tflite package
 3. Process frames and display detection results with Flutter's Canvas API
+
+## Running on a Mobile Device
+
+To run this app on a physical device:
+
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Build the project with `npm run build`
+4. Add the mobile platform:
+   ```
+   npx cap add android
+   ```
+   or
+   ```
+   npx cap add ios
+   ```
+5. Sync the web assets:
+   ```
+   npx cap sync
+   ```
+6. Open the native IDE and run the app:
+   ```
+   npx cap open android
+   ```
+   or
+   ```
+   npx cap open ios
+   ```
 
 ## Real Flutter Implementation Guide
 
@@ -47,7 +85,7 @@ To implement this in a real Flutter application:
 
 ## Performance Optimization Tips
 
-For optimal performance in the real Flutter implementation:
+For optimal performance:
 
 - Process frames at a lower resolution than displayed
 - Consider skipping frames if processing can't keep up
@@ -58,4 +96,5 @@ For optimal performance in the real Flutter implementation:
 ## Credits
 
 - YOLOv8 by Ultralytics
-- This simulation built with React, TypeScript, and Tailwind CSS
+- This simulation built with React, TypeScript, Tailwind CSS, and Capacitor
+

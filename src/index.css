@@ -91,6 +91,15 @@
 
   body {
     @apply bg-background text-foreground dark;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile specific styles */
+  @media (max-width: 768px) {
+    * {
+      user-select: none;
+    }
   }
 }
 
